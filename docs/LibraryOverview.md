@@ -161,7 +161,7 @@ To find out more about SurveyJS strings and localizations go to [Localization an
 
 ### Store survey results in your own database
 
-To store the survey results in your own storage, you must use **onComplete** event. It fires as soon as a user click on the "Complete" button and a page about survey completion is shown.
+To store the survey results in your own storage, you must use **onComplete** event. It fires as soon as a user click on the "Complete" button and a page about survey completion is shown
 
 The implementation of the storing survey results in the database is fully depends on your server backend and database. Unfortunately, this is the code that you must write by yourself. Here is the simplest implementation, in case you have implemented the services on your web site:
 
