@@ -89,6 +89,18 @@ var platformOptions = {
     },
     keywords: ["vue"],
     dependencies: { vue: "^2.1.10" }
+  },
+  pdf: {
+    externals: {
+      vue: {
+        root: "jsPDF",
+        commonjs2: "jsPDF",
+        commonjs: "jsPDF",
+        amd: "jsPDF"
+      }
+    },
+    keywords: ["pdf"],
+    dependencies: { jspdf: "^1.5.3" }
   }
 };
 
