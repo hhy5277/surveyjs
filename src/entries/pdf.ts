@@ -17,4 +17,6 @@ export {
   defaultBootstrapMaterialCss
 } from "../defaultCss/cssbootstrapmaterial";
 
-export { JsPdfSurveyModel as Survey } from "../jspdf/jspdfsurvey";
+export { JsPdfSurveyModel as Survey } from "../jspdf/survey";
+export { QuestionRepository, IPdfQuestion, PdfQuestionRenderer } from "../jspdf/survey";
+export { TextQuestion } from "../jspdf/text";
