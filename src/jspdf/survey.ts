@@ -35,7 +35,12 @@ export class PdfQuestionRendererBase implements IPdfQuestion {
     };
   }
   getBoundariesContent(coordinates: ICoordinates): IRect {
-    return null;
+    return {
+      xLeft: coordinates.xLeft,
+      xRight: coordinates.xLeft,
+      yTop: coordinates.yTop,
+      yBot: coordinates.yTop
+    };
   }
   getBoundaries(coordinates: ICoordinates): IRect {
     switch (this.getQuestion<Question>().titleLocation) {

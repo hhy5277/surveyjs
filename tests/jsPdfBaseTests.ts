@@ -1,30 +1,27 @@
-import { JsPdfSurveyModel } from "../src/jspdf/survey";
+import { TextQuestion } from "../src/jspdf/text";
+import { JsPdfSurveyModel, PdfQuestionRendererBase } from "../src/jspdf/survey";
+import { Question } from "../src/question";
+import { QuestionTextModel } from "../src/entries/pdf";
+import jsPDF from "jspdf";
 
 export default QUnit.module("JsPDF");
 
 QUnit.test("", function(assert) {
-  var json = {
-    questions: [
-      {
-        type: "text",
-        name: "car",
-        title: "What car are you driving?"
-      },
-      {
-        type: "text",
-        name: "car1",
-        title: "What car are you driving?"
-      },
-      {
-        type: "text",
-        name: "car2",
-        title: "What car are you driving?"
-      }
-    ]
+  let coordinates = { xLeft: 1, yTop: 1 };
+  let assumedBoundaries = {
+    xLeft: coordinates.xLeft,
+    xRight: coordinates.xLeft,
+    yTop: coordinates.yTop,
+    yBot: coordinates.yTop
   };
+  let resultBoundaries = new PdfQuestionRendererBase(
+    new Question("q1"),
+    new jsPDF()
+  ).getBoundariesContent(coordinates);
 
-  var pdfSurvey = new JsPdfSurveyModel(json);
-
-  // assert.deepEqual(q1.value, survey.data.image1);
-  // assert.equal(q2.previewValue.length, 1, "file stored as text");
+  assert.deepEqual(
+    assumedBoundaries,
+    resultBoundaries,
+    "PdfQuestionRendererBase.getBoundariesContent return not same boundaries"
+  );
 });
