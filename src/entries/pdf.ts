@@ -21,9 +21,9 @@ export { JsPdfSurveyModel as Survey } from "../jspdf/survey";
 export {
   QuestionRepository,
   IPdfQuestion,
-  PdfQuestionRenderer
+  PdfQuestionRendererBase
 } from "../jspdf/survey";
 export { TextQuestion } from "../jspdf/text";
-export { CheckBoxQuestion } from "../jspdf/checkbox";
-export { RadioGroupQuestion } from "../jspdf/radiogroup";
-export { MatrixDynamicQuestion } from "../jspdf/matrixdynamic";
+// export { CheckBoxQuestion } from "../jspdf/checkbox";
+// export { RadioGroupQuestion } from "../jspdf/radiogroup";
+// export { MatrixDynamicQuestion } from "../jspdf/matrixdynamic";
