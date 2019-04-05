@@ -15,10 +15,10 @@ export interface IRect {
 }
 
 export interface IPdfQuestion {
-  getBoundariesContent(coordinates: IPoint): IRect;
-  getBoundaries(coordinates: IPoint): IRect;
-  renderContent(coordinates: IPoint): void;
-  render(coordinates: IPoint): void;
+  getBoundariesContent(point: IPoint): IRect;
+  getBoundaries(point: IPoint): IRect;
+  renderContent(point: IPoint): void;
+  render(point: IPoint): void;
 }
 declare type RendererConstructor = new (
   question: IQuestion,
@@ -72,12 +72,15 @@ export class QuestionRepository {
 
 export class PdfQuestionRendererBase implements IPdfQuestion {
   constructor(protected question: IQuestion, protected docOptions: DocOptions) {}
-  getBoundariesTitle(point: IPoint): IRect {
+  private getBoundariesTitle(point: IPoint): IRect {
+    return this.getBoundariesText(point, this.getQuestion<Question>().title);
+  }
+  getBoundariesText(point: IPoint, text: string): IRect {
     return {
       xLeft: point.xLeft,
       xRight: point.xLeft +
-        this.getQuestion<Question>().title.length *
-        this.docOptions.getFontSize() * this.docOptions.getXScale(),
+        text.length * this.docOptions.getFontSize() *
+        this.docOptions.getXScale(),
       yTop: point.yTop,
       yBot: point.yTop + this.docOptions.getFontSize() *
         this.docOptions.getYScale()
@@ -142,12 +145,16 @@ export class PdfQuestionRendererBase implements IPdfQuestion {
     }
   }
   private renderTitle(point: IPoint) {
+    this.renderText(point, (<any>this.question).title);
+  }
+  renderText(point: IPoint, text: string) {
+    let alignPoint = this.alignPoint(point, this.getBoundariesText(point, text));
     this.docOptions.getDoc().text(
-      (<any>this.question).title,
-      point.xLeft,
-      point.yTop,
+      text,
+      alignPoint.xLeft,
+      alignPoint.yTop,
       {
-        align: "center",
+        align: "left",
         baseline: "middle"
       }
     );
@@ -157,8 +164,8 @@ export class PdfQuestionRendererBase implements IPdfQuestion {
     switch (this.getQuestion<Question>().titleLocation) {
       case "top":
       case "default": {
+        this.renderTitle(point);
         let titleRect: IRect = this.getBoundariesTitle(point);
-        this.renderTitle(this.centerPoint(point, titleRect));
         let contentPoint: IPoint = {
           xLeft: titleRect.xLeft,
           yTop: titleRect.yBot
@@ -173,13 +180,12 @@ export class PdfQuestionRendererBase implements IPdfQuestion {
           xLeft: contentRect.xLeft,
           yTop: contentRect.yBot
         };
-        let titleRect: IRect = this.getBoundariesTitle(titlePoint);
-        this.renderTitle(this.centerPoint(titlePoint, titleRect));
+        this.renderTitle(titlePoint);
         break;
       }
       case "left": {
+        this.renderTitle(point);
         let titleRect: IRect = this.getBoundariesTitle(point);
-        this.renderTitle(this.centerPoint(point, titleRect));
         let contentPoint: IPoint = {
           xLeft: titleRect.xRight,
           yTop: titleRect.yTop
@@ -193,10 +199,10 @@ export class PdfQuestionRendererBase implements IPdfQuestion {
       }
     }
   }
-  centerPoint(point: IPoint, boundaries: IRect): IPoint
+  alignPoint(point: IPoint, boundaries: IRect): IPoint
   {
     return {
-      xLeft: point.xLeft + (boundaries.xRight - boundaries.xLeft) / 2.0,
+      xLeft: point.xLeft,
       yTop: point.yTop + (boundaries.yBot - boundaries.yTop) / 2.0
     }
   }
@@ -210,16 +216,18 @@ export class JsPdfSurveyModel extends SurveyModel {
     super(jsonObject);
   }
   //isNewPager
-  render() {
+  render(fontSize: number, xScale: number, yScale: number) {
     let docOptions = new DocOptions(new jsPDF(),
-      16, 0.165, 0.36);
+      fontSize, xScale, yScale);
+    let point: IPoint = { xLeft: 0, yTop: 0};
     this.pages.forEach((page: any, index: any) => {
       page.questions.forEach((question: IQuestion) => {
         var renderer = QuestionRepository.getInstance().create(question, docOptions);
-        renderer.render({ xLeft: 0, yTop: 0 });
+        renderer.render(point);
+        let renderBoundaries = renderer.getBoundaries(point);
+        point.yTop = renderBoundaries.yBot;
       });
     });
-    // TODO: remove? place to proper
     docOptions.getDoc().save("survey_result.pdf");
   }
 }
