@@ -47,6 +47,11 @@ export class SelectBaseQuestion extends PdfQuestionRendererBase {
         };
     }
     renderItem(point: IPoint, itemConstructor: () => any, itemValue: ItemValue): any {
+        if (this.docOptions.tryNewPageElement(this.getBoudndariesItem(point,
+            itemValue).yBot)) {
+            point.xLeft = 0;
+            point.yTop = 0;
+        }
         let radioButton = itemConstructor();
         radioButton.Rect = [point.xLeft, point.yTop,
             this.docOptions.getDoc().getFontSize() * this.docOptions.getYScale(),

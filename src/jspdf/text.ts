@@ -29,7 +29,7 @@ export class TextQuestion extends PdfQuestionRendererBase {
       boundaries.yBot - boundaries.yTop
     ];
     textField.multiline = false;
-    textField.value = question.value;
+    textField.value = question.value || "";
     textField.fieldName = question.id;
     this.docOptions.getDoc().addField(textField);
   }
