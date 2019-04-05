@@ -1,28 +1,28 @@
-import { IRect, QuestionRepository, ICoordinates } from "./survey";
+import { IPoint, IRect, QuestionRepository, DocOptions } from "./survey";
 import { PdfQuestionRendererBase } from "./survey";
 import { IQuestion } from "../base";
 import { QuestionTextModel } from "../question_text";
 
 export class TextQuestion extends PdfQuestionRendererBase {
-  constructor(question: IQuestion, doc: any) {
-    super(question, doc);
+  constructor(protected question: IQuestion, protected docOptions: DocOptions) {
+    super(question, docOptions);
   }
-  getBoundariesContent(coordinates: ICoordinates): IRect {
+  getBoundariesContent(point: IPoint): IRect {
     let question: QuestionTextModel = this.getQuestion<QuestionTextModel>();
-    // var width = question.width ? Number(question.width) : 150;
-    let width = 50;
-    let height = 10;
+    let width = question.title.length *
+      this.docOptions.getFontSize() * this.docOptions.getXScale();
+    let height = this.docOptions.getFontSize() * this.docOptions.getYScale();
     return {
-      xLeft: coordinates.xLeft,
-      xRight: coordinates.xLeft + width,
-      yTop: coordinates.yTop,
-      yBot: coordinates.yTop + height
+      xLeft: point.xLeft,
+      xRight: point.xLeft + width,
+      yTop: point.yTop,
+      yBot: point.yTop + height
     };
   }
-  renderContent(coordinates: ICoordinates) {
+  renderContent(point: IPoint) {
     let question: QuestionTextModel = this.getQuestion<QuestionTextModel>();
-    let textField = new this.doc.AcroFormTextField();
-    let boundaries: IRect = this.getBoundaries(coordinates);
+    let textField = new (<any>this.docOptions.getDoc().AcroFormTextField)();
+    let boundaries: IRect = this.getBoundariesContent(point);
     textField.Rect = [
       boundaries.xLeft,
       boundaries.yTop,
@@ -32,7 +32,7 @@ export class TextQuestion extends PdfQuestionRendererBase {
     textField.multiline = false;
     textField.value = question.value;
     textField.fieldName = question.id;
-    this.doc.addField(textField);
+    this.docOptions.getDoc().addField(textField);
   }
 }
 
